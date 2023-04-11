@@ -10,7 +10,7 @@ public class Ranking{
     }
 
     /**
-     * connects to the database
+     * Connects to the database on localhost.
      */
     public void connectToDB() {
         try {
@@ -74,7 +74,7 @@ public class Ranking{
 
     /**
      * Checks whether the database already contains the username given. If it does the user is not created and the function returns false.
-     * If the username does not exist in the database, a new user is created, it is inserted into the database and the function returns true.
+     * If the username does not exist in the database, a new user is created. It is inserted into the database and the function returns true.
      * @param username the username of the new user
      * @return true for success, false for failure
      */
@@ -103,6 +103,11 @@ public class Ranking{
         return true;
     }
 
+    /**
+     * Logs in with the username given as parameter. If the username doesn't exist in the database, a message will be printed and the function returns false.
+     * @param username
+     * @return true for success, false for failure
+     */
     public boolean logIn(String username) {
         String query = "SELECT username FROM tokens WHERE username = ?";
         PreparedStatement instr = null;
@@ -122,6 +127,12 @@ public class Ranking{
         return true;
     }
 
+    /**
+     * Adds tokensAdded number of tokens currently owned by a user. If the username is invalid the function prints an appropriate message and returns false.
+     * @param username
+     * @param tokensAdded how many tokens will be added to the current number of tokens of the user
+     * @return true on success, false on failure.
+     */
     private boolean updateTokens(String username, int tokensAdded) {
         String query = "SELECT token_value FROM tokens WHERE username = ?";
         PreparedStatement instr = null;
@@ -148,6 +159,13 @@ public class Ranking{
         return true;
     }
 
+    /**
+     * Adds a new answer to an existing question to the database. If the answer was already submitted and appropriate message will be printed and the functions returns false.
+     * If the question does not exit in the database, an appropriate message will be printed and the function returns false.
+     * @param username the username of the person who gives the answer
+     * @param questionAsked the question that will be uploaded
+     * @return true on success, false on failure
+     */
     public boolean askQuestion(String username, String questionAsked) {
         String query = "SELECT username, asked_question FROM questions WHERE username = ? AND asked_question = ?";
         PreparedStatement instr = null;
@@ -175,6 +193,9 @@ public class Ranking{
         return true;
     }
 
+    /**
+     * @return database content of every existent question in a String format
+     */
     public String listQuestions(){
         String query = "SELECT questionID, username, asked_question FROM questions";
         PreparedStatement instr = null;
@@ -192,6 +213,10 @@ public class Ranking{
         return result;
     }
 
+    /**
+     * @param questionID  question identifier
+     * @return database content of every answer to the question identified by questionID
+     */
     public String listAnswers(int questionID) {
         String query = "SELECT questionID, username, answerID, answer FROM answers WHERE questionID = ?";
         PreparedStatement instr = null;
@@ -216,6 +241,13 @@ public class Ranking{
         return result;
     }
 
+    /**
+     * Adds an answer to an existing question into the database and checks whether the answer was already submitted.
+     * @param username username of the person who wants to submit an answer
+     * @param questionID question identifier
+     * @param answer answer that will be submitted
+     * @return true on success, false on failure
+     */
     public boolean addAnswer(String username, int questionID, String answer) {
         String query = "SELECT username, answer FROM answers WHERE username = ? AND answer = ?";
         PreparedStatement instr = null;
@@ -254,6 +286,14 @@ public class Ranking{
         return true;
     }
 
+    /**
+     * Checks if the username given as parameter is the same as the owner of the answered question.
+     * If the conditions are met, the tokens will be given to the person who answered the question.
+     * @param username username of the person who wants to offer tokens for a submitted answer
+     * @param answerID answer identifier
+     * @param tokens number of tokens that will be given to the person that owns the answer
+     * @return true on success, false on failure
+     */
     public boolean giveTokens(String username, int answerID, int tokens) {
         String query = "SELECT username, answerID FROM answers WHERE answerID = ?";
         PreparedStatement instr = null;
@@ -288,6 +328,9 @@ public class Ranking{
         return true;
     }
 
+    /**
+     * Closes the connection to the database.
+     */
     public void closeConnection() {
         try {
             con.close();
